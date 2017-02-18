@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.jh.bean.User;
@@ -18,6 +19,8 @@ public class UserAction extends ActionSupport implements ServletRequestAware {
 	private static final long serialVersionUID = 1527623699365829740L;
 
 	private HttpServletRequest req;
+	
+	private Logger logger = Logger.getLogger(UserAction.class);
 	
 	private UserService userService;
 	private List<User> rows;
@@ -56,12 +59,14 @@ public class UserAction extends ActionSupport implements ServletRequestAware {
 	}
 
 	public String id() {
+		logger.info("根据id查询用户信息");
 		user = userService.queryById(User.class, "98bb0882c11211e6808a3065ec373466");
 		System.out.println(user);
 		return "id";
 	}
 	
 	public String pager() {
+		logger.info("分页查找用户信息");
 		Pager4EasyUI<User> pager = new Pager4EasyUI<User>();
 		pager.setPageNo(WebUtil.getPageNo(req));
 		pager.setPageSize(WebUtil.getPageSize(req));
@@ -72,11 +77,13 @@ public class UserAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	public String all() {
+		logger.info("查询所有用户信息");
 		rows = userService.queryAll("User");
 		return "all";
 	}
 	
 	public String save() {
+		logger.info("保存用户信息");
 		User user = new User();
 		user.setEmail("ccc@qq.com");
 		user.setPwd("123456");
