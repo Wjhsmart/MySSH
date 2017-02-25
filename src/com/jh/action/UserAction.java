@@ -5,9 +5,18 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.jh.bean.User;
+import com.jh.bean.Users;
 import com.jh.common.bean.ControllerResult;
 import com.jh.common.bean.Pager4EasyUI;
 import com.jh.common.web.WebUtil;
@@ -26,6 +35,7 @@ public class UserAction extends ActionSupport implements ServletRequestAware {
 	private List<User> rows;
 	private long total;
 	private ControllerResult result;
+	private Users users;
 	
 	private User user;
 	
@@ -38,6 +48,14 @@ public class UserAction extends ActionSupport implements ServletRequestAware {
 		this.userService = userService;
 	}
 	
+	public Users getUsers() {
+		return users;
+	}
+
+	public void setUsers(Users users) {
+		this.users = users;
+	}
+
 	public User getUser() {
 		return user;
 	}
@@ -108,6 +126,45 @@ public class UserAction extends ActionSupport implements ServletRequestAware {
 		userService.delete(user);
 		result = ControllerResult.setSuccessResult("delete success");
 		return "del";
+	}
+	
+	public String loginPage() {
+		return "login_page";
+	}
+	
+	public String login() {
+		Subject subject = SecurityUtils.getSubject();
+		UsernamePasswordToken token = new UsernamePasswordToken(users.getUsername(), users.getPassword());
+		try {  
+	        subject.login(token);  
+	        Session session = subject.getSession();
+	        session.setAttribute("username", subject.getPrincipal().toString());
+	        String role = "admin";
+	        System.out.println("判断当前登录的用户是否有" + role + "的角色：" + subject.hasRole(role));
+//	        String permission = "customer:query";
+//	        subject.checkPermission(permission);
+//	        System.out.println(permission + "有权限");
+//	        String permission1 = "customer:delete";
+//	        subject.checkPermission(permission1);
+//	        System.out.println(permission1 + "有权限");
+	        return "login";
+	    } catch (AuthorizationException e) { // 没有权限
+	    	req.setAttribute("error", "没有权限");
+	    } catch (UnknownAccountException e) { // 未知的账户异常
+	    	req.setAttribute("error", "没有该账户");
+	    } catch (IncorrectCredentialsException e) { // 不正确的凭证异常
+	    	req.setAttribute("error", "密码错误");
+	    } catch (AuthenticationException e) { // 账号验证失败
+	    	req.setAttribute("error", "账号验证失败");
+	    } 
+		return "login_page";
+	}
+	
+	public String loginOut() {
+		Subject subject = SecurityUtils.getSubject();
+		subject.logout();
+		req.setAttribute("error", "您已经安全退出");
+		return "login_page";
 	}
 
 }

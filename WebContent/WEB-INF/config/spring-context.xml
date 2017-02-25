@@ -10,5 +10,8 @@
   <bean id="userDAO" class="com.jh.dao.UserDAOImpl" autowire="byType"></bean>
   <bean id="userService" class="com.jh.service.UserServiceImpl" autowire="byType" />
   <bean id="userAction" class="com.jh.action.UserAction" autowire="byType"></bean>
+  
+  <bean id="rolePermissionDAO" class="com.jh.dao.RolePermissionDAOImpl" autowire="byType" />
+  <bean id="rolePermissionService" class="com.jh.service.RolePermissionServiceImpl" autowire="byType" />
       
 </beans>  

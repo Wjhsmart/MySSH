@@ -12,6 +12,8 @@
 			<result name="save" type="json"></result>
 			<result name="update" type="json"></result>
 			<result name="del" type="json"></result>
+			<result name="login_page">/WEB-INF/views/login.jsp</result>
+			<result name="login">/WEB-INF/views/home1.jsp</result>
 		</action>
 	</package>
 </struts>
